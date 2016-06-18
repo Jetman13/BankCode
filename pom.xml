@@ -3,4 +3,32 @@
   <groupId>com.jetman</groupId>
   <artifactId>BankCode</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+
+  <name>crawler</name>
+  <url>http://maven.apache.org</url>
+  
+  
+   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+  <!-- http://mvnrepository.com/artifact/jdom/jdom -->
+	<dependency>
+    <groupId>jdom</groupId>
+    <artifactId>jdom</artifactId>
+    <version>1.0</version>
+	</dependency>
+
+
+  </dependencies>
+  
+  
 </project>
