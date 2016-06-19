@@ -1,12 +1,6 @@
 package com.jetman.bankcode.action;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +9,11 @@ import java.util.Map;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom.JDOMException;
 
+import com.jetman.bankcode.common.Config;
 import com.jetman.bankcode.util.CSVUtil;
 import com.jetman.bankcode.util.HttpUtil;
 import com.jetman.bankcode.util.StringUtil;
@@ -25,59 +22,16 @@ import com.jetman.bankcode.util.XmlUtil;
 
 
 public class BankCode {
+	
+	private static Logger log = LogManager.getLogger(BankCode.class.getName());
 
 	private static List<String[]> province = new ArrayList<String[]>();
 	private static List<String[]> bankNo = new ArrayList<String[]>();
 	private static List<String[]> cityNo = new ArrayList<String[]>();
 	private static Map<String , String > bankMap = new HashMap<String, String>();
 //	private static Map<String,String> cityno = new HashMap<String, String>();
-	static HostnameVerifier hv = new HostnameVerifier() {  
-        public boolean verify(String urlHostName, SSLSession session) {  
-            System.out.println("Warning: URL Host: " + urlHostName + " vs. "  
-                               + session.getPeerHost());  
-            return true;  
-        }  
-    };  
+
       
-    private static void trustAllHttpsCertificates() throws Exception {  
-        javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];  
-        javax.net.ssl.TrustManager tm = new miTM();  
-        trustAllCerts[0] = tm;  
-        javax.net.ssl.SSLContext sc = javax.net.ssl.SSLContext  
-                .getInstance("SSL");  
-        sc.init(null, trustAllCerts, null);  
-        javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc  
-                .getSocketFactory());  
-    }  
-  
-    static class miTM implements javax.net.ssl.TrustManager,  
-            javax.net.ssl.X509TrustManager {  
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {  
-            return null;  
-        }  
-  
-        public boolean isServerTrusted(  
-                java.security.cert.X509Certificate[] certs) {  
-            return true;  
-        }  
-  
-        public boolean isClientTrusted(  
-                java.security.cert.X509Certificate[] certs) {  
-            return true;  
-        }  
-  
-        public void checkServerTrusted(  
-                java.security.cert.X509Certificate[] certs, String authType)  
-                throws java.security.cert.CertificateException {  
-            return;  
-        }  
-  
-        public void checkClientTrusted(  
-                java.security.cert.X509Certificate[] certs, String authType)  
-                throws java.security.cert.CertificateException {  
-            return;  
-        }  
-    }  
 	static {
 		province.add(new String[]{"1000","北京市"});
 		province.add(new String[]{"1100","天津市"});
@@ -216,12 +170,13 @@ public class BankCode {
 		dataList.add(tmpSb.toString());
 		int len = 200;
 		int i = 0;
+		
 		//通过银行和城市获取联行号
 		for (String[] bank : bankNo) {
 			i++;
-			if(len <= i) {
-				break;
-			}
+//			if(len <= i) {
+//				break;
+//			}
 			for (String[] city : cityNo) {
 				List<Map<String, String>> list = getUnicode(bank[0], city[0], "");
 				for (Map<String, String> map : list) {
@@ -235,8 +190,9 @@ public class BankCode {
 				}
 			}
 		}
-		CSVUtil.exportCsv(new File("D:\\unicodeNew.csv"), dataList);
-		System.out.println("done");
+		CSVUtil.exportCsv(new File(Config.STRO_PATH), dataList);
+		BankCodeDb.insertBankCode(dataList);
+		log.info("done");
 		
 	}
 }
