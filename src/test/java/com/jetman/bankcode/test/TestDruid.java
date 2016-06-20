@@ -20,7 +20,7 @@ public class TestDruid {
 	    public void before() {  
 	        factory = new ClassPathXmlApplicationContext("applicationContext.xml");  
 	        for(int i=0;i<3;i++) {
-	        	datalist.add("1"+i+","+"2"+i+","+"3"+i+","+"4"+i+","+"5"+i+","+"6"+i+","+"7"+i);
+	        	datalist.add("中文"+i+","+"中文2"+i+","+"3"+i+","+"4"+i+","+"523"+i+","+"6"+i+","+"7"+i);
 	        }
 	        System.out.println(factory);
 	    }  
@@ -34,6 +34,7 @@ public class TestDruid {
 			 int i = 0;
 			 for (String s : datalist) {
 				 if(i==0) {
+					 i++;
 					 continue;
 				 }
 				 String[] sp = s.split(",");
@@ -51,6 +52,13 @@ public class TestDruid {
 					int l = dop.executeUpdate(sqlhead + sb.substring(0, sb.length()-1));
 					log.info(l);
 				}
+	    }
+	    
+	    @Test
+	    public void testdb() {
+	    	DruidOperator dop = (DruidOperator) factory.getBean("druidOperator");
+	    	String sql = "insert into my_db.t_shop_order_sn (F_order_id,F_pinpad_uuid) value ('订单号1','隼鸟号')";
+	    	dop.executeUpdate(sql);
 	    }
 
 }
